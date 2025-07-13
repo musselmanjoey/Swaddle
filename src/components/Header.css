@@ -1,0 +1,30 @@
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header-title {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  background: linear-gradient(45deg, #1db954, #1ed760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.header-subtitle {
+  color: #b3b3b3;
+  font-size: 1.1em;
+  font-weight: 400;
+}
+
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 2em;
+  }
+  
+  .header-subtitle {
+    font-size: 1em;
+  }
+}

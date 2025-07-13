@@ -1,0 +1,43 @@
+.status-message {
+  padding: 15px;
+  border-radius: 10px;
+  margin: 15px 0;
+  font-weight: 500;
+  border: 1px solid;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.status-message--success {
+  background: rgba(29, 185, 84, 0.2);
+  border-color: rgba(29, 185, 84, 0.5);
+  color: #1db954;
+}
+
+.status-message--error {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: rgba(231, 76, 60, 0.5);
+  color: #e74c3c;
+}
+
+.status-message--loading {
+  background: rgba(255, 193, 7, 0.2);
+  border-color: rgba(255, 193, 7, 0.5);
+  color: #ffc107;
+}
+
+.status-message--info {
+  background: rgba(52, 152, 219, 0.2);
+  border-color: rgba(52, 152, 219, 0.5);
+  color: #3498db;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
