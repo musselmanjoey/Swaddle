@@ -8,7 +8,7 @@ export const useSpotifyAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const authenticate = useCallback(async (clientId, accessToken = null) => {
+  const authenticate = useCallback(async (accessToken = null) => {
     setLoading(true);
     setError(null);
 
@@ -18,7 +18,7 @@ export const useSpotifyAuth = () => {
         spotifyService.setAccessToken(accessToken);
       } else {
         // Generate auth URL for manual authentication
-        const authURL = spotifyService.generateAuthURL(clientId);
+        const authURL = spotifyService.generateAuthURL();
         return { authURL, requiresManualAuth: true };
       }
 

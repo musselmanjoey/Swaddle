@@ -1,3 +1,5 @@
+import { SPOTIFY_CONFIG } from '../config/spotify';
+
 // Spotify API service - easily adaptable for React Native
 class SpotifyService {
   constructor() {
@@ -7,13 +9,12 @@ class SpotifyService {
   }
 
   // Generate auth URL
-  generateAuthURL(clientId, redirectUri = 'https://developer.spotify.com/documentation/web-api/concepts/authorization') {
-    const scopes = 'playlist-modify-private playlist-modify-public';
+  generateAuthURL() {
     const params = new URLSearchParams({
-      client_id: clientId,
+      client_id: SPOTIFY_CONFIG.CLIENT_ID,
       response_type: 'token',
-      redirect_uri: redirectUri,
-      scope: scopes,
+      redirect_uri: SPOTIFY_CONFIG.REDIRECT_URI,
+      scope: SPOTIFY_CONFIG.SCOPES,
       show_dialog: 'true'
     });
     
