@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "swaddle": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\musse\\Projects\\Swaddle\\swaddle-mcp-server\\index.js"
+      ]
+    }
+  }
+}
