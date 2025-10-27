@@ -13,6 +13,7 @@ import { db } from './db/connection.js';
 import { getLikedSongsCount, getLikedSongsCountSchema } from './tools/getLikedSongsCount.js';
 import { getSyncStatus, getSyncStatusSchema } from './tools/getSyncStatus.js';
 import { syncLikedSongs, syncLikedSongsSchema } from './tools/syncLikedSongs.js';
+import { searchLikedSongs, searchLikedSongsSchema } from './tools/searchLikedSongs.js';
 
 // Create MCP server instance
 const server = new Server(
@@ -31,7 +32,8 @@ const server = new Server(
 const tools = [
   getLikedSongsCountSchema,
   getSyncStatusSchema,
-  syncLikedSongsSchema
+  syncLikedSongsSchema,
+  searchLikedSongsSchema
 ];
 
 // Handler for listing available tools
@@ -103,6 +105,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'sync_liked_songs': {
         const result = await syncLikedSongs(args || {});
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'search_liked_songs': {
+        const result = await searchLikedSongs(args || {});
+
+        if (!result.success) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${result.error}`
+              }
+            ]
+          };
+        }
 
         return {
           content: [

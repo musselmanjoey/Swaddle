@@ -72,6 +72,57 @@ Get the count of liked songs for a Spotify user.
 }
 ```
 
+### search_liked_songs
+
+Search and retrieve liked songs with filtering and sorting options.
+
+**Parameters:**
+- `query` (string, optional): Search text across track name, artist, and album
+- `artist` (string, optional): Filter by artist name (partial match)
+- `album` (string, optional): Filter by album name (partial match)
+- `limit` (number, optional): Max results (1-100, default: 20)
+- `offset` (number, optional): Pagination offset (default: 0)
+- `sortBy` (string, optional): Sort by 'recent', 'name', 'artist', or 'popularity' (default: 'recent')
+- `sortOrder` (string, optional): 'asc' or 'desc' (default: 'desc' for recent, 'asc' for others)
+
+**Returns:**
+```json
+{
+  "success": true,
+  "total": 956,
+  "count": 20,
+  "offset": 0,
+  "hasMore": true,
+  "tracks": [
+    {
+      "id": "track_id",
+      "name": "Song Name",
+      "artist": "Artist Name",
+      "album": "Album Name",
+      "duration": "3:45",
+      "durationMs": 225000,
+      "popularity": 75,
+      "explicit": false,
+      "likedAt": "2024-01-15T10:30:00.000Z",
+      "previewUrl": "https://...",
+      "audioFeatures": {
+        "danceability": 0.75,
+        "energy": 0.82,
+        "valence": 0.65,
+        "tempo": 120.5,
+        "acousticness": 0.15,
+        "instrumentalness": 0.01
+      }
+    }
+  ],
+  "filters": {
+    "query": "search term",
+    "sortBy": "recent",
+    "sortOrder": "DESC"
+  }
+}
+```
+
 ## Usage Example
 
 Once configured in Claude Desktop, you can ask:
