@@ -1,0 +1,233 @@
+.create-playlist-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+}
+
+.page-header {
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.back-button {
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.auth-required {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--card-background);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.auth-required h2 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.auth-required p {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.playlist-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Section Styling */
+.preset-section,
+.custom-section,
+.config-section,
+.actions-section {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.preset-section h2,
+.custom-section h2,
+.config-section h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Presets Grid */
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Custom Section */
+.custom-section p {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.track-input {
+  width: 100%;
+  min-height: 200px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-background);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.track-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color)20;
+}
+
+.track-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Config Form */
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.description-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-background);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.description-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color)20;
+}
+
+.description-input::placeholder {
+  color: var(--text-secondary);
+}
+
+/* Actions Section */
+.actions-section {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-buttons button {
+  min-width: 160px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .create-playlist-page {
+    padding: 1rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+  }
+  
+  .playlist-content {
+    gap: 2rem;
+  }
+  
+  .preset-section,
+  .custom-section,
+  .config-section,
+  .actions-section {
+    padding: 1.5rem;
+  }
+  
+  .presets-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-buttons button {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+/* Animation */
+.preset-section,
+.custom-section,
+.config-section,
+.actions-section {
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.preset-section { animation-delay: 0.1s; }
+.custom-section { animation-delay: 0.2s; }
+.config-section { animation-delay: 0.3s; }
+.actions-section { animation-delay: 0.4s; }
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Status Messages and Results styling inherited from existing components */

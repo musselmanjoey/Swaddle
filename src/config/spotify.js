@@ -12,7 +12,7 @@ export const SPOTIFY_CONFIG = {
   // Fallback for Electron/development
   REDIRECT_URI_FALLBACK: 'https://developer.spotify.com/documentation/web-api/concepts/authorization',
   
-  SCOPES: 'playlist-modify-private playlist-modify-public'
+  SCOPES: 'playlist-modify-private playlist-modify-public user-library-read user-top-read user-read-private user-read-email'
 };
 
 // Validation

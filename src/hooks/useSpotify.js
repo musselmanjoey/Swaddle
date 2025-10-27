@@ -7,6 +7,7 @@ export const useSpotifyAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   const authenticate = useCallback(async (accessToken = null) => {
     setLoading(true);
@@ -16,6 +17,7 @@ export const useSpotifyAuth = () => {
       if (accessToken) {
         // Use provided token
         spotifyService.setAccessToken(accessToken);
+        setAccessToken(accessToken);
       } else {
         // Generate auth URL for manual authentication
         const authURL = spotifyService.generateAuthURL();
@@ -38,23 +40,42 @@ export const useSpotifyAuth = () => {
   }, []);
 
   const processAuthResult = useCallback(async (url) => {
+    console.log('\n🔐 [AUTH-HOOK] ===== PROCESSING AUTH RESULT =====');
+    console.log('🔐 [AUTH-HOOK] URL received:', url);
+    
     setLoading(true);
     setError(null);
 
     try {
       const token = spotifyService.extractTokenFromURL(url);
+      console.log('🔐 [AUTH-HOOK] Token extracted:', token ? token.substring(0, 20) + '...' : 'null');
+      
       if (!token) {
         throw new Error('No access token found in URL');
       }
 
+      console.log('🔐 [AUTH-HOOK] Setting token in Spotify service...');
       spotifyService.setAccessToken(token);
+      setAccessToken(token);
+      
+      console.log('🔐 [AUTH-HOOK] Getting current user data...');
       const userData = await spotifyService.getCurrentUser();
+      console.log('🔐 [AUTH-HOOK] User data received:', userData);
       
       setUser(userData);
       setIsAuthenticated(true);
       
+      console.log('🔐 [AUTH-HOOK] Authentication complete!');
+      console.log('🔐 [AUTH-HOOK] Final state: authenticated =', true, ', user ID =', userData.id);
+      console.log('🔐 [AUTH-HOOK] =======================================\n');
+      
       return { success: true, user: userData };
     } catch (err) {
+      console.error('\n❌ [AUTH-HOOK] ===== AUTH PROCESSING FAILED =====');
+      console.error('❌ [AUTH-HOOK] Error:', err.message);
+      console.error('❌ [AUTH-HOOK] Stack:', err.stack);
+      console.error('❌ [AUTH-HOOK] ======================================\n');
+      
       setError(err.message);
       setIsAuthenticated(false);
       return { success: false, error: err.message };
@@ -65,6 +86,7 @@ export const useSpotifyAuth = () => {
 
   const logout = useCallback(() => {
     spotifyService.setAccessToken(null);
+    setAccessToken(null);
     setIsAuthenticated(false);
     setUser(null);
     setError(null);
@@ -75,6 +97,7 @@ export const useSpotifyAuth = () => {
     user,
     loading,
     error,
+    accessToken,
     authenticate,
     processAuthResult,
     logout

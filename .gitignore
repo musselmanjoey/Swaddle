@@ -17,6 +17,15 @@ node_modules/
 # Spotify tokens - NEVER COMMIT THESE!
 .spotify-tokens.json
 
+# Claude Code configuration (local development)
+.claude/
+
+# Debug assets
+Debug Images/
+
+# Backup files
+*.backup
+
 # Testing
 /coverage
 
