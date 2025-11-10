@@ -5,6 +5,10 @@ Model Context Protocol server for Swaddle - exposes your Spotify liked songs dat
 ## Features
 
 - **get_liked_songs_count**: Get the total count of your liked songs from the local PostgreSQL database
+- **get_sync_status**: Check the sync status of your liked songs
+- **sync_liked_songs**: Sync your liked songs from Spotify API to the database
+- **search_liked_songs**: Search and filter your liked songs
+- **create_playlist**: Create a Spotify playlist with specific tracks
 
 ## Prerequisites
 
@@ -123,13 +127,46 @@ Search and retrieve liked songs with filtering and sorting options.
 }
 ```
 
-## Usage Example
+### create_playlist
+
+Create a new Spotify playlist with specific tracks from your liked songs.
+
+**Parameters:**
+- `name` (string, required): Name for the playlist
+- `description` (string, optional): Description for the playlist
+- `public` (boolean, optional): Whether the playlist should be public (default: false)
+- `trackIds` (array of strings, required): Array of Spotify track IDs to add
+
+**Returns:**
+```json
+{
+  "success": true,
+  "playlist": {
+    "id": "playlist_id",
+    "name": "My Chill Vibes",
+    "description": "Created by Claude",
+    "public": false,
+    "url": "https://open.spotify.com/playlist/...",
+    "uri": "spotify:playlist:..."
+  },
+  "tracksAdded": 25,
+  "tracksRequested": 25
+}
+```
+
+**Note**: Track IDs must be Spotify IDs (without the `spotify:track:` prefix). Use `search_liked_songs` to find tracks and get their IDs.
+
+## Usage Examples
 
 Once configured in Claude Desktop, you can ask:
 
 > "How many liked songs do I have?"
 
-Claude will use the MCP server to query your local database and return the count.
+> "Find me 20 songs with high energy and danceability from my liked songs"
+
+> "Create a playlist called 'Chill Vibes' with these track IDs: [...]"
+
+Claude will use the MCP server to query your local database, search tracks, and create playlists.
 
 ## Troubleshooting
 

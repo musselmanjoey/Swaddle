@@ -211,6 +211,48 @@ class SpotifyService {
 
     return allFeatures;
   }
+
+  /**
+   * Create a playlist for the current user
+   * @param {string} name - Playlist name
+   * @param {string} description - Playlist description
+   * @param {boolean} isPublic - Whether playlist is public
+   * @returns {Promise<Object>} Created playlist object
+   */
+  async createPlaylist(name, description = '', isPublic = false) {
+    // Get current user ID first
+    const user = await this.getCurrentUser();
+
+    return this.request(`/users/${user.id}/playlists`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name,
+        description,
+        public: isPublic
+      })
+    });
+  }
+
+  /**
+   * Add tracks to a playlist
+   * @param {string} playlistId - Spotify playlist ID
+   * @param {string[]} trackUris - Array of Spotify track URIs (spotify:track:xxx)
+   * @returns {Promise<Object>} Snapshot ID
+   */
+  async addTracksToPlaylist(playlistId, trackUris) {
+    return this.request(`/playlists/${playlistId}/tracks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uris: trackUris
+      })
+    });
+  }
 }
 
 export const spotifyService = new SpotifyService();

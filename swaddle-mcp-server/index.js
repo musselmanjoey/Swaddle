@@ -14,6 +14,8 @@ import { getLikedSongsCount, getLikedSongsCountSchema } from './tools/getLikedSo
 import { getSyncStatus, getSyncStatusSchema } from './tools/getSyncStatus.js';
 import { syncLikedSongs, syncLikedSongsSchema } from './tools/syncLikedSongs.js';
 import { searchLikedSongs, searchLikedSongsSchema } from './tools/searchLikedSongs.js';
+import { createPlaylist } from './tools/createPlaylist.js';
+import { spotifyService } from './services/spotifyService.js';
 
 // Create MCP server instance
 const server = new Server(
@@ -28,12 +30,45 @@ const server = new Server(
   }
 );
 
+// Tool schemas
+const createPlaylistSchema = {
+  name: 'create_playlist',
+  description: 'Create a Spotify playlist with specific tracks from your liked songs. Provide track IDs (spotify IDs) and the tool will create a playlist and add those tracks to it.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        description: 'Name for the playlist'
+      },
+      description: {
+        type: 'string',
+        description: 'Description for the playlist (optional)'
+      },
+      public: {
+        type: 'boolean',
+        description: 'Whether the playlist should be public (default: false)',
+        default: false
+      },
+      trackIds: {
+        type: 'array',
+        items: {
+          type: 'string'
+        },
+        description: 'Array of Spotify track IDs to add to the playlist'
+      }
+    },
+    required: ['name', 'trackIds']
+  }
+};
+
 // Tool registry
 const tools = [
   getLikedSongsCountSchema,
   getSyncStatusSchema,
   syncLikedSongsSchema,
-  searchLikedSongsSchema
+  searchLikedSongsSchema,
+  createPlaylistSchema
 ];
 
 // Handler for listing available tools
@@ -118,6 +153,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'search_liked_songs': {
         const result = await searchLikedSongs(args || {});
+
+        if (!result.success) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${result.error}`
+              }
+            ]
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'create_playlist': {
+        const result = await createPlaylist(spotifyService, args || {});
 
         if (!result.success) {
           return {
