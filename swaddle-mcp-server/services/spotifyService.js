@@ -253,6 +253,46 @@ class SpotifyService {
       })
     });
   }
+
+  /**
+   * Search Spotify for tracks, artists, albums, or playlists
+   * @param {string} query - Search query
+   * @param {string} type - Type of search (track, artist, album, playlist) - default: track
+   * @param {number} limit - Number of results (max 50, default 20)
+   * @param {number} offset - Offset for pagination (default 0)
+   * @returns {Promise<Object>} Search results
+   */
+  async search(query, type = 'track', limit = 20, offset = 0) {
+    const validLimit = Math.min(Math.max(1, limit), 50);
+    const params = new URLSearchParams({
+      q: query,
+      type: type,
+      limit: validLimit.toString(),
+      offset: offset.toString()
+    });
+
+    return this.request(`/search?${params.toString()}`);
+  }
+
+  /**
+   * Get track details by ID
+   * @param {string} trackId - Spotify track ID
+   * @returns {Promise<Object>} Track details
+   */
+  async getTrack(trackId) {
+    return this.request(`/tracks/${trackId}`);
+  }
+
+  /**
+   * Get multiple tracks by IDs
+   * @param {string[]} trackIds - Array of Spotify track IDs (max 50)
+   * @returns {Promise<Object>} Tracks object with array of tracks
+   */
+  async getTracks(trackIds) {
+    const validIds = trackIds.slice(0, 50); // Spotify API limit
+    const ids = validIds.join(',');
+    return this.request(`/tracks?ids=${ids}`);
+  }
 }
 
 export const spotifyService = new SpotifyService();

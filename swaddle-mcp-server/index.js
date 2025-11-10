@@ -15,6 +15,7 @@ import { getSyncStatus, getSyncStatusSchema } from './tools/getSyncStatus.js';
 import { syncLikedSongs, syncLikedSongsSchema } from './tools/syncLikedSongs.js';
 import { searchLikedSongs, searchLikedSongsSchema } from './tools/searchLikedSongs.js';
 import { createPlaylist } from './tools/createPlaylist.js';
+import { searchSpotify, searchSpotifySchema } from './tools/searchSpotify.js';
 import { spotifyService } from './services/spotifyService.js';
 
 // Create MCP server instance
@@ -33,7 +34,7 @@ const server = new Server(
 // Tool schemas
 const createPlaylistSchema = {
   name: 'create_playlist',
-  description: 'Create a Spotify playlist with specific tracks from your liked songs. Provide track IDs (spotify IDs) and the tool will create a playlist and add those tracks to it.',
+  description: 'Create a Spotify playlist with specific tracks. Can use tracks from liked songs OR any tracks from Spotify (use search_spotify first). Provide track IDs (spotify IDs) and the tool will create a playlist and add those tracks to it.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -56,6 +57,11 @@ const createPlaylistSchema = {
           type: 'string'
         },
         description: 'Array of Spotify track IDs to add to the playlist'
+      },
+      skipValidation: {
+        type: 'boolean',
+        description: 'Skip database validation to allow any Spotify tracks (not just liked songs). Set to true when using tracks from search_spotify. (default: false)',
+        default: false
       }
     },
     required: ['name', 'trackIds']
@@ -68,6 +74,7 @@ const tools = [
   getSyncStatusSchema,
   syncLikedSongsSchema,
   searchLikedSongsSchema,
+  searchSpotifySchema,
   createPlaylistSchema
 ];
 
@@ -153,6 +160,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'search_liked_songs': {
         const result = await searchLikedSongs(args || {});
+
+        if (!result.success) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${result.error}`
+              }
+            ]
+          };
+        }
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2)
+            }
+          ]
+        };
+      }
+
+      case 'search_spotify': {
+        const result = await searchSpotify(spotifyService, args || {});
 
         if (!result.success) {
           return {

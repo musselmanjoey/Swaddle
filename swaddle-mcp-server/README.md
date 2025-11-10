@@ -8,7 +8,8 @@ Model Context Protocol server for Swaddle - exposes your Spotify liked songs dat
 - **get_sync_status**: Check the sync status of your liked songs
 - **sync_liked_songs**: Sync your liked songs from Spotify API to the database
 - **search_liked_songs**: Search and filter your liked songs
-- **create_playlist**: Create a Spotify playlist with specific tracks
+- **search_spotify**: Search Spotify for any tracks, artists, albums, or playlists
+- **create_playlist**: Create a Spotify playlist with specific tracks (liked or any Spotify tracks)
 
 ## Prerequisites
 
@@ -127,15 +128,55 @@ Search and retrieve liked songs with filtering and sorting options.
 }
 ```
 
+### search_spotify
+
+Search Spotify for tracks, artists, albums, or playlists. Returns results from the entire Spotify catalog.
+
+**Parameters:**
+- `query` (string, required): Search query (e.g., "Bohemian Rhapsody", "Queen", "Dark Side of the Moon")
+- `type` (string, optional): Type of search - 'track', 'artist', 'album', or 'playlist' (default: 'track')
+- `limit` (number, optional): Number of results (1-50, default: 20)
+- `offset` (number, optional): Pagination offset (default: 0)
+
+**Returns:**
+```json
+{
+  "success": true,
+  "type": "track",
+  "query": "Bohemian Rhapsody",
+  "total": 1247,
+  "count": 20,
+  "offset": 0,
+  "hasMore": true,
+  "tracks": [
+    {
+      "id": "4u7EnebtmKWzUH433cf5Qv",
+      "name": "Bohemian Rhapsody",
+      "artist": "Queen",
+      "artists": ["Queen"],
+      "album": "A Night at the Opera",
+      "duration": "5:55",
+      "durationMs": 354000,
+      "popularity": 94,
+      "explicit": false,
+      "previewUrl": "https://...",
+      "uri": "spotify:track:4u7EnebtmKWzUH433cf5Qv",
+      "externalUrl": "https://open.spotify.com/track/..."
+    }
+  ]
+}
+```
+
 ### create_playlist
 
-Create a new Spotify playlist with specific tracks from your liked songs.
+Create a new Spotify playlist with specific tracks. Can use tracks from your liked songs OR any tracks from Spotify.
 
 **Parameters:**
 - `name` (string, required): Name for the playlist
 - `description` (string, optional): Description for the playlist
 - `public` (boolean, optional): Whether the playlist should be public (default: false)
 - `trackIds` (array of strings, required): Array of Spotify track IDs to add
+- `skipValidation` (boolean, optional): Skip database validation to allow any Spotify tracks. Set to true when using tracks from search_spotify (default: false)
 
 **Returns:**
 ```json
@@ -154,7 +195,9 @@ Create a new Spotify playlist with specific tracks from your liked songs.
 }
 ```
 
-**Note**: Track IDs must be Spotify IDs (without the `spotify:track:` prefix). Use `search_liked_songs` to find tracks and get their IDs.
+**Note**: Track IDs must be Spotify IDs (without the `spotify:track:` prefix).
+- For liked songs: Use `search_liked_songs` to find tracks
+- For any Spotify track: Use `search_spotify` to find tracks, then set `skipValidation: true`
 
 ## Usage Examples
 
@@ -164,9 +207,13 @@ Once configured in Claude Desktop, you can ask:
 
 > "Find me 20 songs with high energy and danceability from my liked songs"
 
+> "Search Spotify for songs by The Beatles and create a playlist with the top 10"
+
+> "Create a playlist with Bohemian Rhapsody and Stairway to Heaven"
+
 > "Create a playlist called 'Chill Vibes' with these track IDs: [...]"
 
-Claude will use the MCP server to query your local database, search tracks, and create playlists.
+Claude will use the MCP server to search Spotify, query your local database, and create playlists.
 
 ## Troubleshooting
 

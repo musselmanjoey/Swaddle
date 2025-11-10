@@ -8,6 +8,7 @@ import { db } from '../db/connection.js';
  * @param {string} params.description - Playlist description (optional)
  * @param {boolean} params.public - Whether playlist is public (default: false)
  * @param {string[]} params.trackIds - Array of Spotify track IDs to add
+ * @param {boolean} params.skipValidation - Skip database validation (allows any Spotify track) - default: false
  * @returns {Promise<Object>} Result with playlist info and track count
  */
 export async function createPlaylist(spotifyService, params = {}) {
@@ -15,7 +16,8 @@ export async function createPlaylist(spotifyService, params = {}) {
     name,
     description = '',
     public: isPublic = false,
-    trackIds = []
+    trackIds = [],
+    skipValidation = false
   } = params;
 
   if (!name) {
@@ -33,24 +35,62 @@ export async function createPlaylist(spotifyService, params = {}) {
   }
 
   try {
-    // Validate track IDs exist in database
-    // Note: The 'id' column in tracks table IS the Spotify ID
-    const validationQuery = `
-      SELECT id, name, artist_id
-      FROM tracks
-      WHERE id = ANY($1)
-    `;
-    const validationResult = await db.query(validationQuery, [trackIds]);
+    let validTrackIds = trackIds;
+    let invalidTrackIds = [];
 
-    if (validationResult.rows.length === 0) {
-      return {
-        success: false,
-        error: 'No valid tracks found in database'
-      };
+    // If not skipping validation, check database for track IDs
+    if (!skipValidation) {
+      // Validate track IDs exist in database
+      // Note: The 'id' column in tracks table IS the Spotify ID
+      const validationQuery = `
+        SELECT id, name, artist_id
+        FROM tracks
+        WHERE id = ANY($1)
+      `;
+      const validationResult = await db.query(validationQuery, [trackIds]);
+
+      if (validationResult.rows.length === 0) {
+        return {
+          success: false,
+          error: 'No valid tracks found in database. Use skipValidation: true to add any Spotify tracks, or use search_spotify to find tracks first.'
+        };
+      }
+
+      validTrackIds = validationResult.rows.map(row => row.id);
+      invalidTrackIds = trackIds.filter(id => !validTrackIds.includes(id));
+    } else {
+      // When skipping validation, verify tracks exist on Spotify
+      console.error(`⚠️  Skipping database validation, will attempt to add ${trackIds.length} tracks directly from Spotify`);
+
+      // Validate tracks exist on Spotify by fetching them in batches
+      const batches = [];
+      for (let i = 0; i < trackIds.length; i += 50) {
+        batches.push(trackIds.slice(i, i + 50));
+      }
+
+      const allValidIds = [];
+      const allInvalidIds = [];
+
+      for (const batch of batches) {
+        try {
+          const result = await spotifyService.getTracks(batch);
+          result.tracks.forEach((track, idx) => {
+            if (track) {
+              allValidIds.push(track.id);
+            } else {
+              allInvalidIds.push(batch[idx]);
+            }
+          });
+        } catch (error) {
+          console.error(`❌ Error validating tracks on Spotify: ${error.message}`);
+          // If validation fails, try all tracks anyway
+          allValidIds.push(...batch);
+        }
+      }
+
+      validTrackIds = allValidIds;
+      invalidTrackIds = allInvalidIds;
     }
-
-    const validTrackIds = validationResult.rows.map(row => row.id);
-    const invalidTrackIds = trackIds.filter(id => !validTrackIds.includes(id));
 
     // Create playlist on Spotify
     const playlist = await spotifyService.createPlaylist(name, description, isPublic);
